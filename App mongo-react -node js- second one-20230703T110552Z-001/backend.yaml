@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backapp-deployment
+  labels:
+    app: backapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backapp
+  template:
+    metadata:
+      labels:
+        app: backapp
+    spec:
+      containers:
+      - name: backapp
+        image: ramzi1994/nodejsbackend:1.0
+        ports:
+        - containerPort: 4000
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            configMapKeyRef:
+              name: db-mongo-config
+              key: mongo-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backapp-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: to-do-app-frontend
+  ports:
+    - port: 4000
+      targetPort: 4000

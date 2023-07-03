@@ -1,0 +1,79 @@
+# Define 'Service' to expose backend application deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: to-do-app-backend
+spec:
+  selector:  # backend application pod lables should match these
+    app: to-do-app
+    tier: backend
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer   # use NodePort, if you are not running Kubernetes on cloud
+---
+# Configure 'Deployment' of backend application
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: to-do-app-backend
+  labels:
+    app: to-do-app
+    tier: backend
+spec:
+  replicas: 1    # Number of replicas of back-end application to be deployed
+  selector:
+    matchLabels: # backend application pod labels should match these
+      app: to-do-app
+      tier: backend
+  template:
+    metadata:
+      labels: # Must macth 'Service' and 'Deployment' labels
+        app: to-do-app
+        tier: backend
+    spec:
+      containers:
+      - name: to-do-app-backend
+        image: salimbechraoui25/backend:1.0   # docker image of backend application
+        env:   # Setting Enviornmental Variables
+          - name: DB_HOST   # Setting Database host address from configMap
+            valueFrom:
+              configMapKeyRef:
+                name: db-conf  # name of configMap
+                key: host
+          - name: DB_NAME  # Setting Database name from configMap
+            valueFrom:
+              configMapKeyRef:
+                name: db-conf
+                key: name
+          - name: DB_USERNAME  # Setting Database username from Secret
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials # Secret Name
+                key: username
+          - name: DB_PASSWORD # Setting Database password from Secret
+            valueFrom:
+              secretKeyRef:
+                name: db-credentials
+                key: password
+          - name: spring.datasource.url
+            value: jdbc:mysql://mysqldb/springboot?allowPublicKeyRetrieval=true&useSSL=false
+          - name: spring.datasource.validationQuery
+            value: SELECT 1
+          - name: spring.jpa.hibernate.ddl-auto
+            value: update
+          - name: spring.jpa.properties.hibernate.dialect
+            value: org.hibernate.dialect.MySQL5Dialect
+          - name: spring.jpa.show-sql
+            value: "true"
+          - name: spring.datasource.driver-class-name
+            value: com.mysql.cj.jdbc.Driver
+          - name: spring.datasource.password
+            value: salimbackend
+          - name: spring.datasource.testWhileIdle
+            value: "true"
+        ports:
+        - containerPort: 8080
+
+

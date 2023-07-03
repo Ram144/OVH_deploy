@@ -1,0 +1,7 @@
+# ConfigMap to expose configuration related to backend application
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-url
+data:
+  URL: http://to-do-app-backend:8080/emp

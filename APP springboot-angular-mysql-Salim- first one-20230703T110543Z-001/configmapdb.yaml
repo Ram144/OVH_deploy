@@ -1,0 +1,12 @@
+# Define 'Configmap' to store non-sensitive database configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-conf  # name of ConfigMap, referenced in other files
+data:
+  host: mysqldb   # host address of mysql server, we are using DNS of Service
+  name: springboot # name of the database for application
+  MYSQL_DATABASE: springboot
+  MYSQL_DATABASE_URL: jdbc:mysql://mysqldb/springboot?allowPublicKeyRetrieval=true&useSSL=false
+
+

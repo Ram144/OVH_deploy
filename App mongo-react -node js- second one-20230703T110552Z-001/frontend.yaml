@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-service
+  labels:
+    app: react-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: to-do-app-frontend
+  ports:
+    - port: 3000
+      targetPort: 3000
+        #nodePort: 4200
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-deployment
+  labels:
+    app: react-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+      - name: react-app
+        image: ramzi1994/reactfrontend:latest
+        imagePullPolicy: Never
+        env:
+        - name: BACKEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: url
+              key: URL
+
+        ports:
+        - containerPort: 3000
+
+

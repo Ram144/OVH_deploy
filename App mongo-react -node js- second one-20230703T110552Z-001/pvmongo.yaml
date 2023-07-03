@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv-ramzi
+  namespace: ramzi
+  labels:
+    type: local
+spec:
+  storageClassName: csi-cinder-high-speed
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/data"

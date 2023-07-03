@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-ramzi
+  labels:
+    app: mongodb-ramzi
+    tier: database
+    service: mongodb-ramzi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-ramzi
+      service: mongodb-ramzi
+#  strategy:
+#    type: Recreate
+  template:
+    metadata:
+      name: mongodb-ramzi
+      labels:
+        app: mongodb-ramzi
+        tier: database
+#        network/wedonetwork: "true"
+        service: mongodb-ramzi
+    spec:
+      containers:
+      - image: mongo:4.4  # image from docker-hub
+        name: mongodb-ramzi
+        imagePullPolicy: "IfNotPresent"
+#        args:
+#          - "--ignore-db-dir=lost+found"
+        resources: {}
+        env:
+        - name: db-mongo-config # Setting Database Name from a 'ConfigMap'
+#          value: springboot
+          valueFrom:
+            configMapKeyRef:
+              name: db-mongo-config
+              key: name
+
+        ports:
+        - containerPort: 27017
+          name: mongodb-ramzi
+        volumeMounts:        # Mounting voulume obtained from Persistent Volume Claim
+        - name: mongodb-pv-claim-ramzi
+          mountPath: /mnt/data
+      volumes:
+      - name: mongodb-pv-claim-ramzi # Obtaining 'vloume' from PVC
+        persistentVolumeClaim:
+          claimName: mongodb-pv-claim-ramzi
+      restartPolicy: Always
+status: {}
+---

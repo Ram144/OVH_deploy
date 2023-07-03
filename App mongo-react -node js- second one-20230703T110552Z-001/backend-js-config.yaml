@@ -1,0 +1,7 @@
+# ConfigMap to expose configuration related to backend application
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: url
+data:
+  URL: http://backapp-service.ramzi.svc:4000/books

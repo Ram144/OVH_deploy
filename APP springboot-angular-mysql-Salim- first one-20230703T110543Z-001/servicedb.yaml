@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqldb
+  labels:
+    app: mysqldb
+    tier: database
+spec:
+  selector:
+    app: mysqldb
+    tier: database
+  ports:
+  - protocol: TCP
+    port: 3306
+    targetPort: mysqldb
+  clusterIP: None
